@@ -1,0 +1,236 @@
+{
+  "info": {
+    "name": "OmniShop E2E (Wave 2)",
+    "description": "End-to-end journey: register → login → browse → review → coupon → order (saga) → payment → status (admin) → notifications → refresh-token rotation. Run top to bottom. Admin calls need the admin login token (admin@omnishop.local / admin123).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [""],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "variable": [
+    { "key": "customerToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "productId", "value": "" },
+    { "key": "orderId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Register customer",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8083/api/v1/users/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Demo\",\"email\":\"demo@test.com\",\"password\":\"secret123\"}"
+            }
+          }
+        },
+        {
+          "name": "Login customer (copy token → customerToken, refreshToken → refreshToken)",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8083/api/v1/users/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"demo@test.com\",\"password\":\"secret123\"}"
+            }
+          }
+        },
+        {
+          "name": "Login admin (copy token → adminToken)",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8083/api/v1/users/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"admin@omnishop.local\",\"password\":\"admin123\"}"
+            }
+          }
+        },
+        {
+          "name": "Rotate access token",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8083/api/v1/users/refresh-token",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"refreshToken\":\"{{refreshToken}}\"}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Catalog (public reads)",
+      "item": [
+        {
+          "name": "List products",
+          "request": { "method": "GET", "url": "http://localhost:8081/api/v1/products" }
+        },
+        {
+          "name": "Search",
+          "request": { "method": "GET", "url": "http://localhost:8081/api/v1/products/search?q=phone" }
+        },
+        {
+          "name": "Feature flags",
+          "request": { "method": "GET", "url": "http://localhost:8081/api/v1/flags" }
+        }
+      ]
+    },
+    {
+      "name": "3. Reviews (needs customer login)",
+      "item": [
+        {
+          "name": "Post review",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8081/api/v1/products/{{productId}}/reviews",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"userId\":1,\"rating\":5,\"comment\":\"Superb\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Admin catalog (Bearer {{adminToken}})",
+      "item": [
+        {
+          "name": "Create product",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "url": "http://localhost:8081/api/v1/products",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Postman Phone\",\"price\":4999.50,\"stockQuantity\":10,\"category\":\"Electronics\"}"
+            }
+          }
+        },
+        {
+          "name": "Toggle flag",
+          "request": {
+            "method": "PUT",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "url": "http://localhost:8081/api/v1/flags/reviews",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"enabled\":true}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Coupons + order saga",
+      "item": [
+        {
+          "name": "Create coupon (admin)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "url": "http://localhost:8082/api/v1/coupons",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"code\":\"SAVE10\",\"discountType\":\"PERCENTAGE\",\"value\":10}"
+            }
+          }
+        },
+        {
+          "name": "Validate coupon",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8082/api/v1/coupons/validate?code=SAVE10&subtotal=200"
+          }
+        },
+        {
+          "name": "Place order (returns PENDING, settles async)",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8082/api/v1/orders",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"userId\":1,\"items\":[{\"productId\":1,\"quantity\":1}],\"paymentMethod\":\"CARD\",\"couponCode\":\"SAVE10\"}"
+            }
+          }
+        },
+        {
+          "name": "Poll order (expect CONFIRMED or PAYMENT_FAILED)",
+          "request": { "method": "GET", "url": "http://localhost:8082/api/v1/orders/{{orderId}}" }
+        },
+        {
+          "name": "Update status (admin)",
+          "request": {
+            "method": "PUT",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "url": "http://localhost:8082/api/v1/orders/{{orderId}}/status",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"status\":\"SHIPPED\"}" }
+          }
+        },
+        {
+          "name": "Analytics summary (admin)",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "url": "http://localhost:8082/api/v1/orders/analytics/summary"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Payment + notifications",
+      "item": [
+        {
+          "name": "Direct payment",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8084/api/v1/payments",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderId\":1,\"amount\":100.00,\"method\":\"UPI\"}"
+            }
+          }
+        },
+        {
+          "name": "Inbox",
+          "request": { "method": "GET", "url": "http://localhost:8085/api/v1/notifications/user/1" }
+        }
+      ]
+    }
+  ]
+}

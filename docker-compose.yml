@@ -1,0 +1,236 @@
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: omnishop-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_USER}
+      POSTGRES_MULTIPLE_DATABASES: omnishop_products,omnishop_orders,omnishop_users,omnishop_payments,omnishop_notifications
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./db-init/init-multi-db.sh:/docker-entrypoint-initdb.d/init-multi-db.sh:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - omnishop-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  product-service:
+    build:
+      context: ./product-service
+    container_name: omnishop-product-service
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: omnishop_products
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_DATA_REDIS_HOST: redis
+      # product-service builds its JDBC URL from SPRING_DATASOURCE_URL;
+      # composed here from the same logical values (no hardcoded secrets).
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/omnishop_products
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8081:8081"
+    networks:
+      - omnishop-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  order-service:
+    build:
+      context: ./order-service
+    container_name: omnishop-order-service
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      product-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: omnishop_orders
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      PRODUCT_SERVICE_URL: http://product-service:8081
+      PAYMENT_SERVICE_URL: http://payment-service:8084
+      SPRING_RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8082:8082"
+    networks:
+      - omnishop-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: omnishop-user-service
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: omnishop_users
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:-omnishop-dev-secret-key-min-32-chars-long!!}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@omnishop.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+    ports:
+      - "8083:8083"
+    networks:
+      - omnishop-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8083/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  payment-service:
+    build:
+      context: ./payment-service
+    container_name: omnishop-payment-service
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: omnishop_payments
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8084:8084"
+    networks:
+      - omnishop-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8084/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  notification-service:
+    build:
+      context: ./notification-service
+    container_name: omnishop-notification-service
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: omnishop_notifications
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8085:8085"
+    networks:
+      - omnishop-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8085/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: omnishop-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - omnishop-network
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    container_name: omnishop-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - omnishop-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  zipkin:
+    image: openzipkin/zipkin:3
+    container_name: omnishop-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - omnishop-network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: omnishop-frontend
+    depends_on:
+      - product-service
+      - order-service
+    ports:
+      - "3000:80"
+    networks:
+      - omnishop-network
+    environment:
+      VITE_PRODUCT_API_URL: http://localhost:8081
+      VITE_ORDER_API_URL: http://localhost:8082
+      VITE_USER_API_URL: http://localhost:8083
+      VITE_NOTIFICATION_API_URL: http://localhost:8085
+      VITE_PAYMENT_API_URL: http://localhost:8084
+
+networks:
+  omnishop-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

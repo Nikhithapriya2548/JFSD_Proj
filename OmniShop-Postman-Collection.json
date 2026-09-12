@@ -1,0 +1,21 @@
+{
+  "info": { "name": "OmniShop API Tests", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "item": [
+    {
+      "name": "Product Service (port 8081)",
+      "item": [
+        { "name": "GET all products", "request": { "method": "GET", "url": "http://localhost:8081/api/v1/products" } },
+        { "name": "POST create product", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\":\"Test Phone\",\"description\":\"Demo\",\"price\":14999,\"stockQuantity\":20,\"category\":\"Electronics\"}" }, "url": "http://localhost:8081/api/v1/products" } },
+        { "name": "GET in-stock products", "request": { "method": "GET", "url": "http://localhost:8081/api/v1/products/in-stock" } }
+      ]
+    },
+    {
+      "name": "Order Service (port 8082)",
+      "item": [
+        { "name": "GET all orders", "request": { "method": "GET", "url": "http://localhost:8082/api/v1/orders" } },
+        { "name": "POST place order", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"customerName\":\"Pavan\",\"customerEmail\":\"pavan@test.com\",\"items\":[{\"productId\":1,\"productName\":\"Laptop Pro 15\",\"quantity\":1,\"unitPrice\":89999}]}" }, "url": "http://localhost:8082/api/v1/orders" } },
+        { "name": "GET high-value orders", "request": { "method": "GET", "url": "http://localhost:8082/api/v1/orders/high-value?min=5000" } }
+      ]
+    }
+  ]
+}

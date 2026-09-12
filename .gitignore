@@ -1,0 +1,24 @@
+# Secrets / local env
+.env
+scripts/.env
+
+# Java / Maven
+target/
+*.class
+
+# Node / frontend
+node_modules/
+dist/
+
+# Python seeder
+__pycache__/
+*.pyc
+
+# Local test/run artifacts
+test-output.txt
+*.log
+
+# IDEs
+.idea/
+*.iml/
+.vscode/
