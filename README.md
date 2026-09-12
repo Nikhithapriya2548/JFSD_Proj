@@ -1,244 +1,306 @@
 # OmniShop — E-Commerce Microservices Platform
 
-Java Full Stack project (ACSD30): Spring Boot microservices + PostgreSQL,
-orchestrated with Docker Compose.
+**Course:** ACSD30 Java Full Stack Development, V Semester, Institute of
+Aeronautical Engineering (Autonomous), Hyderabad.
+**Stack:** Java 17, Spring Boot 3.2, Spring Data JPA + Hibernate, PostgreSQL,
+RabbitMQ, Redis, React + Tailwind, Docker Compose.
+**Status:** all services healthy, 65/65 end-to-end checks green, 60/60 unit
+tests green.
 
-## Architecture
+OmniShop is a complete online store: customers browse a catalog, read and
+write reviews, apply coupons, check out through a simulated payment gateway
+and track orders; admins manage products, coupons, order statuses, feature
+flags and sales analytics. The system is split into five independent Spring
+Boot services that communicate over REST and RabbitMQ events, with a React
+storefront and everything runnable in Docker with one command.
 
-```
-                    +-----------------------------+
-                    |        omnishop-network     |
-                    |        (bridge)             |
-                    |                             |
-  :8081  +----------+-----------+                 |
- ------> | product-service      |                 |
-         | (Spring Boot, :8081) |                 |
-         +----------+-----------+                 |
-                    | JDBC                        |
-                    v                             |
-         +----------+-----------+    REST         |
-         |  postgres-db         |<----------------+
-         |  (:5432, internal)   |  product-service:8081
-         |  omnishop_products   |
-         |  omnishop_orders     |    +-------------+--------+
-         |  omnishop_users      |    | order-service       |
-         |  omnishop_payments   |    | (Spring Boot, :8082)|
-         +----------+-----------+    +------+------+--------+
-                    ^                       |      |
-                    | JDBC            payment|      | users (Wave 2 auth)
-                    |                   v      v
-         +----------+-----------+  +-----+  +------+
-         |  (one container,     |  | pay |  | user |
-            4 logical DBs)      |  |:8084|  |:8083 |
-                               |  +-----+  +------+
-                                          ^       ^
-         frontend :3000 ------------------+-------+
-         (React SPA, calls each service directly)
-```
+## Contents
 
-Host exposes ONLY: 5432 (postgres-db), 8081 (product), 8082 (order),
-8083 (user), 8084 (payment), 3000 (frontend).
-Services talk to each other via Docker service names, never localhost.
-Payment service is SIMULATED (mock gateway, demo only — no real money moves).
-```
+1. [Architecture](#1-architecture)
+2. [Full setup](#2-full-setup)
+3. [How each module works](#3-how-each-module-works)
+4. [Syllabus mapping (ACSD30 Modules I–V)](#4-syllabus-mapping-acsd30-modules-iv)
+5. [API reference](#5-api-reference)
+6. [Verification and testing](#6-verification-and-testing)
+7. [Demo script](#7-demo-script)
+8. [Deliberately not built](#8-deliberately-not-built)
+9. [Troubleshooting](#9-troubleshooting)
 
-## Order saga (simplified SAGA pattern for distributed transactions)
-
-Order placement no longer calls payment-service synchronously. Instead the
-flow is choreographed through RabbitMQ (`omnishop.events` topic exchange):
+## 1. Architecture
 
 ```
-Customer            order-service        RabbitMQ            payment-service      product-service      notification-service
-   |  POST /orders       |                   |                       |                      |                       |
-   | ------------------> | save PENDING      |                       |                      |                       |
-   |  201 PENDING        | publish           |                       |                      |                       |
-   | <------------------ | order.created --> | --------+------------>|                      |                       |
-   |                     |                   |         |             | process (mock ~1.5s) |                       |
-   |                     |                   |         |             | publish              |                       |
-   |                     |                   |         | payment.completed                |                       |
-   |                     | <-----------------+-----------------------+                      |                       |
-   |                     | CONFIRMED                                  |                      |                       |
-   |  poll → CONFIRMED   |                                            |                      |                       |
+Browser (:3000, React SPA)
+ ├── product-service   :8081 ──► omnishop_products DB ──► Redis (cache)
+ ├── order-service     :8082 ──► omnishop_orders DB
+ ├── user-service      :8083 ──► omnishop_users DB
+ ├── payment-service   :8084 ──► omnishop_payments DB
+ ├── notification-svc  :8085 ──► omnishop_notifications DB
+ ├── RabbitMQ :5672 (order.created → stock/payment/notify fan-out)
+ ├── Zipkin   :9411 (distributed traces, optional)
+ └── Postgres :5432 (four logical databases, one container)
 ```
 
-- `order.created` → payment-service charges (mock) + product-service
-  **reserves stock** (optimistic `@Version` locking; `stock.low` if < 10).
-- `payment.completed` → order CONFIRMED. `payment.failed` → order
-  PAYMENT_FAILED + `order.payment_failed` compensation → product-service
-  **restores the reserved stock**, notification-service informs the user.
-- Every transition also emits `order.status.changed` for the inbox.
-- DB rows are the source of truth; messages only advance state. Duplicate
-  deliveries converge (listeners ignore non-PENDING orders).
-- RabbitMQ management UI: http://localhost:15672 (guest/guest).
+Each service owns its database and can be built, deployed and scaled
+independently. Synchronous calls (order → product/price check, frontend →
+any service) use REST; asynchronous side-effects (stock deduction, payment
+verdict, notifications) use RabbitMQ events so a slow or down consumer never
+blocks checkout.
 
-## Cache strategy (product-service + Redis)
+## 2. Full setup
 
-- `@Cacheable` on product-by-id and product-list (60s TTL safety net).
-- `@CacheEvict` on every mutation: product create/update/delete, review
-  add (ratings feed the cached DTO), and saga stock changes.
-- Rule: writes evict explicitly; TTL covers any missed invalidation so
-  stale data can never live longer than 60 seconds.
+### Prerequisites
 
-## Prerequisites
+- Docker Desktop (Compose v2 included), 8 GB RAM free
+- PowerShell on Windows (commands below) or any shell with `docker`
+- Ports free: 3000, 5432, 5672, 6379, 8081–8085, 9411
+- No Java/Node needed on the host — everything builds inside Docker
 
-- Docker Engine 24+
-- Docker Compose v2 (`docker compose version`)
+### Step 1 — start everything
 
-## How to run
-
-```bash
-cd D:/JFSD_Project
-docker compose up --build
+```powershell
+cd D:\JFSD_Project
+docker compose up -d --build
 ```
 
-Start in background:
+First boot takes 5–10 minutes (Maven downloads dependencies once, cached
+afterwards). Wait until all backends answer:
 
-```bash
-docker compose up --build -d
-docker compose logs -f
+```powershell
+foreach ($p in 8081,8082,8083,8084,8085) {
+  Write-Host "$p :" (Invoke-RestMethod "http://localhost:$p/actuator/health").status
+}
 ```
 
-Stop / full reset (deletes DB data):
+### Step 2 — seed the catalog (~78 products)
 
-```bash
-docker compose down
-docker compose down -v   # also removes postgres-data volume
+```powershell
+python scripts/seed_products.py
 ```
 
-## How to verify
+This scrapes the legal scraping sandbox (webscraper.io test site), assigns
+stock, attaches images and POSTs each product as the admin user. Answer `y`
+if it asks about existing products.
 
-```bash
-# 1. DB is healthy
-docker compose ps
-docker exec omnishop-postgres pg_isready -U omnishop_admin
+### Step 3 — verify (65 automated checks)
 
-# 2. Both databases exist
-docker exec omnishop-postgres psql -U omnishop_admin -d postgres -c "\l" | grep omnishop
-
-# 3. product-service is up — create a product
-curl -X POST http://localhost:8081/api/v1/products \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test Phone","description":"Demo","price":14999,"stockQuantity":20,"category":"Electronics"}'
-
-# 4. product-service is up — list products
-curl http://localhost:8081/api/v1/products
-
-# 5. order-service is up — list orders
-curl http://localhost:8082/api/v1/orders
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File run-and-test.ps1
 ```
 
-End-to-end test — order-service calls product-service over the Docker
-network (note: `productId` must exist from step 3):
+Expected: `Total: 65 Passed: 65 Failed: 0`. The script rebuilds, waits for
+health, then exercises register → login → catalog → reviews → search →
+order saga → payment → coupons → notifications → admin guards (summary table
+printed at the end).
 
-```bash
-curl -X POST http://localhost:8082/api/v1/orders \
-  -H "Content-Type: application/json" \
-  -d '{"userId":1,"items":[{"productId":1,"quantity":2}]}'
-```
+### Step 4 — open the app
 
-Expected: HTTP 201 with `priceAtPurchase` snapshotted from product-service,
-`totalAmount` computed via Streams, `status: PENDING`.
-
-## Port reference
-
-| Service         | Host port | Container port | Notes                              |
-|-----------------|-----------|----------------|------------------------------------|
-| postgres-db     | 5432      | 5432           | Only DB exposed to host            |
-| product-service | 8081      | 8081           | REST: `/api/products`              |
-| order-service   | 8082      | 8082           | REST: `/api/orders`                |
-| frontend        | 3000      | 80             | Phase 4 (currently commented out)  |
-
-Internal traffic: `order-service → http://product-service:8081`
-(DB host from inside containers: `postgres-db:5432`).
-
-Config: credentials live in `.env` (gitignored); compose references them
-as `${VAR_NAME}` — nothing hardcoded. DB names are logical databases
-(`omnishop_products`, `omnishop_orders`) inside ONE Postgres container,
-created on first init by `db-init/init-multi-db.sh`.
-
-## Wave 2 — security, observability, safer schema changes
-
-### Centralized auth (JWT everywhere)
-- user-service is the only issuer: `POST /api/v1/users/login` returns a **15-minute access token** plus a **7-day refresh token** (opaque, SHA-256 hashed at rest, single-use with rotation — reuse is rejected and revokes the chain).
-- product/order/payment validate the same `JWT_SECRET` locally (no per-request call to user-service). No token → `401`; valid token without the role → `403`, both in the standard `{timestamp,status,error,message,path}` envelope.
-- Rules: `GET /api/v1/products/**` (+ search, flags, health, swagger) is public; every write needs a login; product CRUD, coupon creation, order status changes, flag toggles and `/api/v1/orders/analytics/summary` need `ADMIN`.
-- Frontend: Bearer auto-attached, `/checkout` and `/admin` redirect when unauthenticated, silent refresh 60s before access-token expiry.
-- Demo admin: `admin@omnishop.local` / `admin123` (seeded).
-- Abuse guards (deliberately in-memory, single-instance scope): login 5 failures / 15 min per email → `429`; order creation and payment posts 30 / min per IP → `429`. Deliberately NOT distributed — a Redis/Bucket4j limiter is the documented next step.
-
-### Correlation IDs + tracing
-- Every service accepts/generates `X-Correlation-ID` (response echoes it), logs include it (`[correlationId]` in every log line), order-service forwards it over RestClient, and every saga event carries it — listeners rejoin the trace via MDC.
-- Zipkin tracing (Micrometer Brave, 100% sample in demo): UI at http://localhost:9411. HTTP hops trace fully; RabbitMQ hops have no automatic span linking (no Sleuth), so queue legs are followed via the correlationId in the payload/logs instead.
-
-### Flyway (product + order services)
-- `ddl-auto=update` replaced with `validate` + versioned migrations (`db/migration/V1__init.sql` mirrors the exact pre-existing schema). Existing databases baseline V1 without replaying (`baseline-on-migrate`); fresh databases build from V1.
-- The old `orders_status_check` constraint was dropped on purpose: it rejected new enum values at the DB layer after Java added them. Statuses are validated in Java.
-- user/payment/notification still use `ddl-auto` — adopting the same Flyway pattern is tracked follow-up, not done here.
-
-### Analytics + feature flags
-- `GET /api/v1/orders/analytics/summary` (ADMIN): totals, 30-day revenue-by-day and status distribution via Streams `groupingBy`. The admin Analytics tab shows this live, keeping the old client-side chart as fallback context.
-- Feature flags (`GET /api/v1/flags` public, `PUT /api/v1/flags/{key}` ADMIN; seeded `reviews`, `coupons`): the frontend hides the Reviews tab / coupon field when off, with a 5-min client cache. Admin Flags tab toggles at runtime — no redeploy.
-
-### Verification added
-- 20 unit tests (Mockito, no Spring context): coupon math/guards (7), analytics grouping (2), rating aggregation (3), mock-gateway outcomes (3), JWT roundtrip/tamper/expiry (4), login throttle (3). Run in CI (`.github/workflows/ci.yml`: backend `mvn test` matrix + frontend build + compose validate).
-- `run-and-test.ps1` now authenticates (customer + admin bootstrap) and asserts the guards: U7 refresh rotation, U8 login throttle 429, SEC1–SEC4 401/403 boundaries, A1 analytics, G1–G3 flags.
-- `docs/OmniShop-E2E.postman_collection.json`: full journey collection with admin/customer token variables.
-
-### Deliberately NOT built (Wave 2 scope cuts)
-- API Gateway and Config Server: evaluated, rejected for this deployment size — one public surface doesn't justify the hop/latency, and env-var config is sufficient for 5 services. Revisit past ~10 services.
-- Notification inbox has no auth (read-only demo feed). Known gap, disclosed.
-- No distributed rate limiting, no refresh-token reuse detection beyond chain revocation, no DB-level FK constraints in V1 baselines (integrity enforced by JPA mappings).
-- XSS: React escapes all rendered values by default; the only `dangerouslySetInnerHTML` risk would be product descriptions — none used. Admin-entered product/review text is rendered as plain text, never parsed as HTML.
-
-## Port reference (Wave 2 additions)
-| Service | Port |
+| Page | URL |
 |---|---|
-| Zipkin UI | 9411 |
+| Storefront | http://localhost:3000 |
+| Admin login | http://localhost:3000/admin/login |
+| Zipkin traces | http://localhost:9411 |
+| RabbitMQ dashboard | http://localhost:15672 (guest/guest) |
+| Swagger (each service) | http://localhost:8081/swagger-ui.html (…8082–8085 likewise) |
 
-## Wave 3 — relevance, payment retry/receipts, frontend polish, demo kit
+**Accounts:** admin `admin@omnishop.local` / `admin123` (seeded); customers
+self-register in the UI in seconds.
 
-### Search relevance (product-service)
-- `GET /api/v1/products/search?q=` filters with the existing JPA Specifications,
-  then scores with Streams when no explicit `sortBy` is given: name match (3)
-  > category (2) > description (1), name tiebreak. Explicit sorts
-  (priceAsc/Desc, newest, ratingDesc) bypass scoring untouched.
-- Deliberate call: DB-agnostic scoring, no native full-text index at this
-  catalog size; revisit past ~10k products. Covered by unit tests
-  (name > category > description; explicit sort not reshuffled) and suite
-  check S5.
+### Configuration
 
-### Payment retry + receipts (payment-service + order history)
-- New `GET /api/v1/payments/{id}` receipt (404 envelope when unknown) backed by
-  `PaymentNotFoundException`; suite check M3.
-- Order history: PAYMENT_FAILED rows get a method picker + **Retry payment**
-  (posts a NEW gateway attempt against the same order — the mock declines
-  ~15%, so retry usually succeeds, toast confirms either way) and a
-  **View receipt** modal listing every attempt with transaction id.
-- No idempotency keys on retry by design: each attempt is a distinct recorded
-  row, which is exactly what the receipt shows.
+Copy-free defaults live in `docker-compose.yml`; secrets live in `.env`
+(gitignored, never committed):
 
-### Frontend polish
-- Real 404 page (`*` route renders NotFoundPage, no longer Home).
-- Toasts everywhere it matters: login/register welcome, coupon
-  applied/rejected, order cancelled, cart remove + stock-cap, review added,
-  payment retry outcome (cancel/review toasts pre-existed).
-- Orders + notifications use the logged-in user's id (guest fallback to the
-  demo user); navbar Alerts badge shows inbox size, refreshed on navigation
-  (no backend read-state, so it's a total-count badge — labeled as such).
-- Optimistic cart: already local-first (reducer updates instantly, persists to
-  localStorage) — Wave 3 only added the missing feedback (stock-cap/remove
-  toasts) and documented the pattern in code.
+| Variable | Meaning | Default |
+|---|---|---|
+| `JWT_SECRET` | Shared signing key for all services | dev key (override in production) |
+| `DB_USER` / `DB_PASSWORD` | Postgres credentials | see `.env` |
+| `VITE_*_API_URL` | Browser-side service URLs (baked at frontend build) | `http://localhost:80xx` |
 
-### Demo kit
-- `docs/DEMO.md`: 5-minute narrated script (story → customer flow → retry →
-  admin → Zipkin proof → backup Q&A).
-- `docs/OmniShop-E2E.postman_collection.json` (Wave 2) + CI (Wave 2) unchanged.
-- Screenshots: not included — the sandboxed docs environment has no route to
-  localhost:3000, so canned screenshots would be mockups, not evidence. The
-  demo script's checkpoints are the verifiable substitute.
+Frontend `VITE_*` values are baked at **build** time, so after changing them
+rebuild the frontend (`docker compose build frontend`).
 
-### Verification (Wave 3)
-- 26 unit tests green (added: 2 relevance, 2 receipt).
-- Suite extended to 65 checks (M3 receipt 404, S5 relevance order).
-- Live-verified: relevance order (name hits first), receipt 200 + 404,
-  customer review flow re-verified after Wave 2 rule fix.
+## 3. How each module works
+
+### product-service (:8081) — catalog, reviews, search, flags
+
+- `Product` entity with price, stock, category, image; `Review` entity with
+  1–5 rating; `FeatureFlag` entity (`reviews`, `coupons` kill-switches).
+- Reads are public; writes need login; product CRUD and flag toggles need
+  ADMIN (Spring Security + JWT filter, first-match rule order).
+- Catalog reads are cached in Redis (60 s TTL, explicit eviction on writes).
+- Search filters with JPA Specifications, then scores relevance with Streams
+  (name 3 > category 2 > description 1) unless an explicit sort is given.
+- Listens for `order.created` (decrements stock, emits `stock.low` under
+  threshold) and `order.payment_failed` (restores reserved stock).
+
+### order-service (:8082) — ordering, coupons, saga, analytics
+
+- Order flow is a choreography saga: persist PENDING → publish
+  `order.created` → return immediately. The payment verdict arrives later via
+  `payment.completed` / `payment.failed` events (CONFIRMED or PAYMENT_FAILED).
+- Live prices are re-read from product-service per item; client-sent totals
+  are never trusted. Coupons validate (expiry, usage limit, minimum order)
+  and discount the Streams-computed subtotal.
+- Only PENDING orders can be cancelled (guard message otherwise); status
+  changes publish `order.status.changed` for the inbox.
+- `GET /api/v1/orders/analytics/summary` (ADMIN) aggregates totals, 30-day
+  revenue-by-day and status split with `groupingBy`.
+
+### user-service (:8083) — identity only
+
+- Sole token issuer: 15-minute JWT access tokens + 7-day opaque refresh
+  tokens (SHA-256 hashed at rest, single-use rotation — reuse revokes the
+  chain). Passwords are BCrypt-hashed; login is throttled (5 failures /
+  15 min per email → 429).
+
+### payment-service (:8084) — honest simulator
+
+- No real money moves: fixed delay, ~85% success, `MOCK-TXN-*` ids standing
+  in for a Razorpay/Stripe gateway. Every attempt is a recorded row;
+  `GET /api/v1/payments/{id}` returns the receipt. Direct re-POST against the
+  same order is the retry mechanism the UI exposes.
+
+### notification-service (:8085) — event inbox
+
+- Pure consumer: every saga event becomes a persisted human-readable record
+  (`order.created`, `payment.completed/failed`, `stock.low`, …), served
+  newest-first per user. No real email/SMS provider by design.
+
+### frontend (:3000) — React storefront
+
+- Catalog with search/category/sort, product detail with reviews and rating
+  distribution, optimistic local-first cart (instant updates, localStorage
+  persistence, stock-cap feedback), 3-step checkout with inline validation
+  and coupon field, calm payment-retry screen, order history with status
+  stepper + receipt modal, notifications inbox with navbar badge, admin
+  dashboard (products, orders, coupons, analytics, reviews, feature flags).
+- JWT auto-attached; silent refresh 60 s before expiry plus a 401-rotation
+  interceptor, so sessions survive past the 15-minute access token.
+
+## 4. Syllabus mapping (ACSD30 Modules I–V)
+
+### Module I — Collections, Streams, exception handling, Java 8
+
+| Syllabus topic | Where it is implemented | How it is used |
+|---|---|---|
+| List / Set / Map | `OrderServiceImpl`, `CouponService`, `ProductServiceImpl`, analytics | Item lists, event payload maps, flag maps, category sets |
+| Streams (`filter/map/reduce/sorted/collect`) | Order subtotal (`reduce`), revenue-by-day and status split (`groupingBy`), relevance scoring (`sorted`), in-stock filter, rating average | All totals, analytics and search ordering areStreams pipelines with no manual loops |
+| `Collectors` | `groupingBy`, `toMap` (flags), `toList`, `reducing` | Analytics endpoint and flag controller |
+| Lambda + functional interfaces | Comparators, `orElseThrow` suppliers, `thenAnswer` in tests, React-side array methods mirroring the same style | Sorting, lazy exceptions, test stubs |
+| `Optional` | Repository lookups (`findById`, `findByCodeIgnoreCase`) | Every "get by id/code" path returns `Optional` and throws a named exception when empty |
+| Date/Time API | `LocalDateTime` order dates, coupon expiry, token expiry, 15-min/7-day windows | Ordering, expiry checks, session lifetimes |
+| Exception handling | `GlobalExceptionHandler` per service + named exceptions (`OrderNotFoundException`, `InsufficientStockException`, `InvalidCouponException`, `PaymentNotFoundException`, `TooManyAttemptsException`) | Every error returns the same `{timestamp,status,error,message,path}` envelope; 401/403/404/409/429 each have a dedicated path |
+| I/O streams | Logback file/console appenders in all five services; resource loading (Flyway SQL, seeder file handling) | Startup, request and saga logging with correlation ids |
+| Mini-project (Student Management) | Superset: the same List/Map/Streams/exception skills drive the catalog, coupon and analytics features above | CO1 evidence: 60 unit tests assert the stream logic directly |
+
+### Module II — Session management, Hibernate ORM
+
+| Syllabus topic | Where it is implemented | How it is used |
+|---|---|---|
+| Cookies / client session | Browser `localStorage` (`omnishop-token`, `omnishop-refresh`, `omnishop-user`) + silent refresh | Login persists across reloads; `RequireAuth`/`RequireAdmin` route guards replace server session checks |
+| HttpSession (server side) | Stateless JWT sessions (the clustered successor): services are `STATELESS`, no server session state | Horizontal scaling without sticky sessions; logout = client discards tokens, refresh rotation revoked server-side |
+| URL rewriting | Not used — stateless Bearer headers replace session-id-in-URL entirely | Documented as intentionally superseded |
+| `@Entity`, `@Table`, `@Id` | `Product`, `Review`, `Order`, `OrderItem`, `Coupon`, `User`, `RefreshToken`, `Payment`, `Notification`, `FeatureFlag` | Every table is an annotated class; schema managed by Flyway baselines + `validate` (product/order) |
+| One-to-Many | `Order` → `OrderItem` (`@OneToMany`), `Product` → `Review` (query-side) | Order totals, stock checks and rating aggregation traverse these relationships |
+| Mini-project (Library Management) | Superset: books→products, users→customers, issue/return→order saga with PENDING/CONFIRMED states | CO3 evidence: full CRUD + sessions + relationships across five databases |
+
+### Module III — Spring Framework (IoC, DI, MVC)
+
+| Syllabus topic | Where it is implemented | How it is used |
+|---|---|---|
+| IoC container / beans | `@Service`, `@Component`, `@Configuration`, `@RestControllerAdvice` in every service | All wiring done by Spring; no `new` for dependencies |
+| Dependency injection | Constructor injection via Lombok `@RequiredArgsConstructor` | Services declare `final` dependencies; tests inject Mockito mocks the same way |
+| Bean lifecycle | `CommandLineRunner` seeders (`AdminSeeder`, `FlagSeeder`) | Admin user and flag keys seeded once at startup, idempotently |
+| DispatcherServlet / Controllers | `@RestController` + `@GetMapping/@PostMapping/...` (Boot auto-configures the servlet) | ~40 endpoints; OpenAPI docs generated from annotations |
+| Model–View | DTOs (`ProductResponseDTO`, `OrderResponseDTO`, …) separate entities from API shapes | Entities never leak to JSON; mapping is explicit (`toDTO`) |
+| Mini-project (Employee CRUD) | Superset: admin dashboard performs product/coupon CRUD through the same controller→service→repository layers | CO4 evidence |
+
+### Module IV — Microservices with Spring Boot, RWD, Spring Data JPA
+
+| Syllabus topic | Where it is implemented | How it is used |
+|---|---|---|
+| Auto-configuration | `@SpringBootApplication` + starters (web, data-jpa, amqp, validation, actuator) | Zero XML; `application.yml` only carries DB URLs, ports and feature toggles |
+| Independent microservices | Five deployables, four databases, one `docker-compose.yml` | Each has its own Dockerfile, health check and Swagger UI |
+| REST APIs | Resource URLs (`/api/v1/products/{id}`, `/api/v1/orders`, …) with correct status codes (200/201/400/401/403/404/409/429) | Tested by Postman collection, 65-check PowerShell suite and 60 unit tests |
+| Spring Data JPA | `JpaRepository` + `JpaSpecificationExecutor` per aggregate; derived queries (`findByCodeIgnoreCase`, `findByOrderId`) | No handwritten SQL except versioned Flyway migrations |
+| Responsive UI | Tailwind breakpoints in every page (`grid-cols-1 sm:… lg:…`, drawer, stepper) | Phone-to-desktop layouts; mobile-first cart and checkout |
+| Mini-project (Product Catalog) | This project *is* the catalog microservice, plus four siblings | CO5 evidence |
+
+### Module V — Postman, Docker
+
+| Syllabus topic | Where it is implemented | How it is used |
+|---|---|---|
+| Postman | `docs/OmniShop-E2E.postman_collection.json` + root `OmniShop-Postman-Collection.json` | Full journey (register → coupon → saga → retry → admin) with `{{customerToken}}` / `{{adminToken}}` variables |
+| Images vs containers | One Dockerfile per service (multi-stage Maven build → slim JRE runtime) | `docker compose build` produces 6 images; `up` runs 10 containers |
+| Dockerfile | Each service: `maven:3.9` build stage, `eclipse-temurin:17-jre` runtime, `curl` for health checks | Mirrors the syllabus Dockerfile pattern per service |
+| `docker build/run/ps/stop`, port mapping | `docker-compose.yml` (ports, healthchecks, networks, named volumes) | `up -d`, `ps`, `logs <service>`, `down -v` (wipe + fresh start) |
+| Mini-project (Dockerized Boot app) | Six-fold: every backend plus the Nginx frontend is containerized | CO6 evidence; CI (`.github/workflows/ci.yml`) builds and unit-tests on every push |
+
+## 5. API reference
+
+Base URLs are the service roots (`:8081` product, `:8082` order, `:8083`
+user, `:8084` payment, `:8085` notification). Auth column: `–` public,
+`U` any login, `A` ADMIN.
+
+| Method & path | Auth | Purpose |
+|---|---|---|
+| `GET /api/v1/products`, `/{id}`, `/in-stock` | – | Catalog reads |
+| `GET /api/v1/products/search?…` | – | Filter + relevance/sort search |
+| `POST /api/v1/products` `PUT /{id}` `DELETE /{id}` | A | Catalog management |
+| `GET /api/v1/products/{id}/reviews` | – | Review list |
+| `POST /api/v1/products/{id}/reviews` | U | Write a review |
+| `GET /api/v1/flags` / `PUT /api/v1/flags/{key}` | – / A | Feature flags |
+| `POST /api/v1/users/register` `/login` | – | Auth (login returns access + refresh JWT) |
+| `POST /api/v1/users/refresh-token` | – | Rotate access token (single-use) |
+| `GET /api/v1/users/{id}` `PUT /{id}` | – | Profile (demo-open) |
+| `POST /api/v1/orders` | U | Place order → PENDING + saga start |
+| `GET /api/v1/orders/{id}` `/user/{uid}` `/high-value` | U | Order reads |
+| `PUT /api/v1/orders/{id}/status` | A | Status transition |
+| `PUT /api/v1/orders/{id}/cancel` | U | Cancel (PENDING only) |
+| `POST /api/v1/coupons` | A | Create coupon |
+| `GET /api/v1/coupons/validate?…` | U | Validate without consuming |
+| `GET /api/v1/orders/analytics/summary` | A | Revenue + status analytics |
+| `POST /api/v1/payments` | U | Simulated charge (SUCCESS/FAILED) |
+| `GET /api/v1/payments/order/{oid}` `GET /api/v1/payments/{id}` | U | Attempts / receipt |
+| `GET /api/v1/notifications/user/{uid}` | – | Event inbox (demo-open) |
+| `GET /actuator/health` | – | Liveness (all services) |
+
+## 6. Verification and testing
+
+- `run-and-test.ps1` — 65 checks: rebuild, health, auth, reviews, search,
+  saga settlement, payment, coupons, notifications, guards (401/403/429),
+  flags, analytics, frontend routes, product update/delete roundtrip.
+- Unit tests — 60 total, no Spring context (JUnit 5 + Mockito + AssertJ):
+  16 user (service, JWT, throttle), 24 order (service, coupons, analytics,
+  JWT filter, rate limit), 8 product (service, flags), 7 payment (service,
+  rate limit), 5 notification (listener rendering).
+- CI — `.github/workflows/ci.yml`: backend `mvn test` matrix, frontend
+  build, compose validation on every push.
+- Tracing — Zipkin UI shows cross-service spans; every log line carries the
+  `X-Correlation-ID`.
+
+## 7. Demo script
+
+`docs/DEMO.md` is a 5-minute narrated script: customer flow → failed-payment
+retry → order receipt → admin analytics/flags → Zipkin trace proof, with
+backup viva answers.
+
+## 8. Deliberately not built
+
+- API Gateway and Config Server: evaluated, rejected — one public surface
+  does not justify the extra hop; env-var config suffices for five services.
+  Revisit past ~10 services.
+- Real payments (PCI-DSS, webhooks, refunds), real email/SMS providers.
+- Distributed rate limiting (in-memory guards are single-instance by
+  design), DB-level FK constraints in Flyway baselines (integrity via JPA).
+
+## 9. Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `My Orders: Authentication required` right after login | Access token older than 15 min with no refresh stored (pre-fix session) | Log out and back in once; rotation handles it thereafter |
+| Port already in use | Stale containers | `docker compose down` then `up -d` |
+| Empty catalog | `run-and-test.ps1` starts with `down -v` (fresh DB by design) | `python scripts/seed_products.py` |
+| Suite `S5` fails on custom data | Assertion assumes the wiped single-product catalog | Re-run the unmodified suite |
+| Frontend calls wrong host | `VITE_*` baked at build | Rebuild frontend after env changes |
+| `401` on all guarded calls after env edit | `JWT_SECRET` must match in every service block | Keep the single `.env` value; all services read it |
