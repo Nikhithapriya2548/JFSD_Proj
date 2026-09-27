@@ -6,6 +6,21 @@ import { formatUSD } from '../utils/format'
 
 const PLACEHOLDER = '/placeholder-product.png'
 
+const getProductImage = (product) => {
+  const text = `${product.name} ${product.category || ''}`.toLowerCase();
+  if (text.includes('laptop')) return '/laptop.png';
+  if (text.includes('tablet')) return '/tablet.png';
+  if (text.includes('phone') || text.includes('iphone')) return '/phone.png';
+  if (text.includes('smartwatch') || text.includes('watch')) return '/smartwatch.png';
+  if (text.includes('monitor') || text.includes('display')) return '/monitor.png';
+  if (text.includes('keyboard')) return '/keyboard.png';
+  if (text.includes('mouse') || text.includes('mice')) return '/mouse.png';
+  if (text.includes('console') || text.includes('xbox') || text.includes('playstation')) return '/console.png';
+  if (text.includes('camera') || text.includes('dslr')) return '/camera.png';
+  if (text.includes('headphone') || text.includes('audio')) return '/headphones.png';
+  return PLACEHOLDER;
+};
+
 export function stockTier(stockQuantity) {
   const q = stockQuantity ?? 0
   if (q <= 0) return { label: 'Out of Stock', cls: 'bg-red-100 text-red-700' }
@@ -30,7 +45,8 @@ export default function ProductCard({ product }) {
   const { add } = useCart()
   const { notify } = useToast()
   const outOfStock = (product.stockQuantity ?? 0) <= 0
-  const [imgSrc, setImgSrc] = useState(product.imageUrl || PLACEHOLDER)
+  const categoryImage = getProductImage(product);
+  const [imgSrc, setImgSrc] = useState(product.imageUrl || categoryImage)
   const tier = stockTier(product.stockQuantity)
 
   const handleAdd = (e) => {
@@ -41,33 +57,34 @@ export default function ProductCard({ product }) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow hover:shadow-lift hover:-translate-y-0.5 transition-micro flex flex-col overflow-hidden">
-      <Link to={`/product/${product.id}`} className="block h-44 bg-gray-100 overflow-hidden">
-        <img
-          src={imgSrc}
-          alt={product.name}
-          loading="lazy"
-          onError={() => { if (imgSrc !== PLACEHOLDER) setImgSrc(PLACEHOLDER) }}
-          className="h-full w-full object-cover hover:scale-105 transition-transform duration-200"
-        />
-      </Link>
-      <div className="p-4 flex flex-col flex-1">
-        <Link to={`/product/${product.id}`} className="font-semibold text-gray-900 truncate hover:text-brand-600 transition-micro">
+    <div className="flex flex-col h-full bg-white rounded-[2rem] overflow-hidden transition-all duration-200 hover:shadow-sm border-0 p-2 pb-4">
+      <div className="relative bg-[#f4f5f9] rounded-3xl p-4 flex justify-center items-center h-44 mb-3 group">
+        <button 
+          onClick={handleAdd}
+          className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors bg-white rounded-full p-1.5 shadow-sm opacity-100 z-10"
+        >
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+           </svg>
+        </button>
+        <Link to={`/product/${product.id}`} className="block h-full w-full flex justify-center items-center">
+          <img
+            src={imgSrc}
+            alt={product.name}
+            loading="lazy"
+            onError={() => { if (imgSrc !== categoryImage) setImgSrc(categoryImage) }}
+            className="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
+          />
+        </Link>
+      </div>
+      
+      <div className="flex items-center justify-between px-2">
+        <Link to={`/product/${product.id}`} className="text-[13px] font-medium text-gray-700 truncate hover:text-black mr-2">
           {product.name}
         </Link>
-        <p className="text-sm text-gray-500 line-clamp-2 flex-1">{product.description}</p>
-        <p className="mt-2 text-lg font-bold text-gray-900">{formatUSD(product.price)}</p>
-        <StarRating value={product.averageRating} count={product.reviewCount} />
-        <span className={`mt-1 inline-block w-fit whitespace-nowrap text-xs font-medium px-2.5 py-1 rounded-full ${tier.cls}`}>
-          {tier.label}
+        <span className="text-[13px] font-bold text-gray-900 shrink-0">
+          ${Math.round(product.price)}
         </span>
-        <button
-          disabled={outOfStock}
-          onClick={handleAdd}
-          className="mt-3 w-full py-2 rounded-md text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 active:scale-[0.98] transition-micro disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          {outOfStock ? 'Unavailable' : 'Add to Cart'}
-        </button>
       </div>
     </div>
   )

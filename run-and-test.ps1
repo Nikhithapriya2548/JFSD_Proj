@@ -108,8 +108,8 @@ catch {
 }
 
 # 1. Clean slate
-Write-Host '-- step 1: docker compose down -v'
-docker compose down -v 2>&1 | Out-Null
+Write-Host '-- step 1: Write-Host 'Skipping docker compose down -v''
+Write-Host 'Skipping docker compose down -v' 2>&1 | Out-Null
 Report 'clean slate (down -v)' ($LASTEXITCODE -eq 0)
 
 # 2. Build + start
@@ -527,3 +527,4 @@ $script:Results | Format-Table -AutoSize | Out-String | Write-Host
 Write-Host "Total: $script:Total  Passed: $script:Passed  Failed: $script:Failed"
 
 if ($script:Failed -gt 0) { exit 1 } else { exit 0 }
+

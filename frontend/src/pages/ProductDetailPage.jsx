@@ -12,6 +12,23 @@ import { useFlags } from '../api/flagsApi'
 import { MOCK_USER_ID } from '../constants'
 
 const PLACEHOLDER = '/placeholder-product.png'
+
+const getProductImage = (product) => {
+  if (!product) return PLACEHOLDER;
+  const text = `${product.name} ${product.category || ''}`.toLowerCase();
+  if (text.includes('laptop')) return '/laptop.png';
+  if (text.includes('tablet')) return '/tablet.png';
+  if (text.includes('phone') || text.includes('iphone')) return '/phone.png';
+  if (text.includes('smartwatch') || text.includes('watch')) return '/smartwatch.png';
+  if (text.includes('monitor') || text.includes('display')) return '/monitor.png';
+  if (text.includes('keyboard')) return '/keyboard.png';
+  if (text.includes('mouse') || text.includes('mice')) return '/mouse.png';
+  if (text.includes('console') || text.includes('xbox') || text.includes('playstation')) return '/console.png';
+  if (text.includes('camera') || text.includes('dslr')) return '/camera.png';
+  if (text.includes('headphone') || text.includes('audio')) return '/headphones.png';
+  return PLACEHOLDER;
+};
+
 const TABS = ['Description', 'Reviews', 'Specifications']
 
 export default function ProductDetailPage() {
@@ -20,6 +37,7 @@ export default function ProductDetailPage() {
   const { add } = useCart()
   const { notify } = useToast()
   const [product, setProduct] = useState(null)
+  const [categoryImage, setCategoryImage] = useState(PLACEHOLDER)
   const [related, setRelated] = useState([])
   const [qty, setQty] = useState(1)
   const [tab, setTab] = useState('Description')
@@ -42,7 +60,9 @@ export default function ProductDetailPage() {
     getProductById(id)
       .then((p) => {
         setProduct(p)
-        setImgSrc(p.imageUrl || PLACEHOLDER)
+        const catImg = getProductImage(p)
+        setCategoryImage(catImg)
+        setImgSrc(p.imageUrl || catImg)
         setQty(1)
         getReviews(p.id).then(setReviews).catch(() => {})
         // Related: same category, excluding itself (client-side filter,
@@ -123,19 +143,19 @@ export default function ProductDetailPage() {
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Gallery column — sticky on desktop, structured for future thumbnails */}
         <div className="md:sticky md:top-20 self-start">
-          <div className="bg-white rounded-xl shadow overflow-hidden">
+          <div className="bg-gray-50 rounded-2xl shadow-sm overflow-hidden flex justify-center items-center p-4 h-80 sm:h-[28rem]">
             <img
               src={imgSrc}
               alt={product.name}
               loading="lazy"
-              onError={() => { if (imgSrc !== PLACEHOLDER) setImgSrc(PLACEHOLDER) }}
-              className="w-full h-72 sm:h-96 object-cover"
+              onError={() => { if (imgSrc !== categoryImage) setImgSrc(categoryImage) }}
+              className="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-300"
             />
           </div>
           <div className="mt-2 flex gap-2">
             <button className="w-16 h-16 rounded-lg overflow-hidden ring-2 ring-brand-600 transition-micro" aria-label="Main image">
               <img src={imgSrc} alt="" className="w-full h-full object-cover"
-                onError={(e) => { e.currentTarget.src = PLACEHOLDER }} />
+                onError={(e) => { e.currentTarget.src = categoryImage }} />
             </button>
           </div>
         </div>

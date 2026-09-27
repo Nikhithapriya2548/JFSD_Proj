@@ -1,0 +1,1002 @@
+[
+  {
+    "Name": "ThinkCore 13-inch",
+    "Description": "High-Performance laptop featuring incredible design.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "ProBook Touch V2",
+    "Description": "Advanced laptop featuring incredible design.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Gaming Edge 17-inch",
+    "Description": "Modern laptop featuring long battery life.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "UltraBook 17-inch Z",
+    "Description": "Premium laptop featuring unmatched speed.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Gaming Edge Touch X",
+    "Description": "Next-Gen laptop featuring gorgeous display.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Gaming Edge 13-inch V2",
+    "Description": "Elite laptop featuring gorgeous display.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "ThinkCore 17-inch X",
+    "Description": "Sleek laptop featuring unmatched speed.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "ThinkCore Touch X",
+    "Description": "Sleek laptop featuring long battery life.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "ProBook Touch Plus",
+    "Description": "Elite laptop featuring gorgeous display.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "UltraBook Touch Plus",
+    "Description": "Sleek laptop featuring long battery life.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Gaming Edge OLED V2",
+    "Description": "Premium laptop featuring incredible design.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Zenith Touch",
+    "Description": "Sleek laptop featuring unmatched speed.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "ProBook Touch Gen 3",
+    "Description": "Advanced laptop featuring industry-leading specs.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "ThinkCore 13-inch",
+    "Description": "Modern laptop featuring incredible design.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Gaming Edge 13-inch Gen 3",
+    "Description": "Premium laptop featuring long battery life.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Zenith 17-inch Gen 3",
+    "Description": "Next-Gen laptop featuring industry-leading specs.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "ProBook Touch",
+    "Description": "Modern laptop featuring gorgeous display.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Gaming Edge 15-inch",
+    "Description": "Premium laptop featuring gorgeous display.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "UltraBook 15-inch X",
+    "Description": "Sleek laptop featuring long battery life.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "ThinkCore 15-inch V2",
+    "Description": "Next-Gen laptop featuring incredible design.",
+    "Category": "Laptops"
+  },
+  {
+    "Name": "Nova Max",
+    "Description": "Next-Gen phone featuring industry-leading specs.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Pixel Lite X",
+    "Description": "Modern phone featuring industry-leading specs.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Apex Max Gen 3",
+    "Description": "Next-Gen phone featuring industry-leading specs.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Galaxy Mini Plus",
+    "Description": "Elite phone featuring industry-leading specs.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Pixel Mini",
+    "Description": "Sleek phone featuring unmatched speed.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Galaxy Max",
+    "Description": "Elite phone featuring incredible design.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Alpha Mini X",
+    "Description": "Next-Gen phone featuring industry-leading specs.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Galaxy Ultra",
+    "Description": "Elite phone featuring unmatched speed.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Galaxy Pro Z",
+    "Description": "Premium phone featuring unmatched speed.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Alpha Mini Gen 3",
+    "Description": "Sleek phone featuring unmatched speed.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Galaxy Lite",
+    "Description": "Advanced phone featuring long battery life.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Alpha Lite Z",
+    "Description": "Modern phone featuring unmatched speed.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Pixel Max V2",
+    "Description": "High-Performance phone featuring incredible design.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Galaxy Pro V2",
+    "Description": "High-Performance phone featuring incredible design.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Apex Pro Plus",
+    "Description": "Premium phone featuring unmatched speed.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Alpha Pro Gen 3",
+    "Description": "Next-Gen phone featuring industry-leading specs.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Pixel Ultra Plus",
+    "Description": "High-Performance phone featuring industry-leading specs.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Apex Mini Gen 3",
+    "Description": "Modern phone featuring industry-leading specs.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Pixel Ultra",
+    "Description": "Elite phone featuring long battery life.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Pixel Ultra V2",
+    "Description": "Modern phone featuring incredible design.",
+    "Category": "Phones"
+  },
+  {
+    "Name": "Folio Pro X",
+    "Description": "Next-Gen tablet featuring long battery life.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Pad Air Gen 3",
+    "Description": "Advanced tablet featuring unmatched speed.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Pad LTE",
+    "Description": "Advanced tablet featuring unmatched speed.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Slate LTE V2",
+    "Description": "Advanced tablet featuring unmatched speed.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Slate LTE V2",
+    "Description": "Next-Gen tablet featuring industry-leading specs.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Pad LTE",
+    "Description": "Elite tablet featuring unmatched speed.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Pad Pro Plus",
+    "Description": "Modern tablet featuring gorgeous display.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Canvas LTE V2",
+    "Description": "Sleek tablet featuring incredible design.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Canvas LTE Z",
+    "Description": "Modern tablet featuring gorgeous display.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Pad 10-inch Gen 3",
+    "Description": "Modern tablet featuring industry-leading specs.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Canvas Pro X",
+    "Description": "Next-Gen tablet featuring industry-leading specs.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Canvas 10-inch X",
+    "Description": "Modern tablet featuring long battery life.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Canvas Air Plus",
+    "Description": "Sleek tablet featuring unmatched speed.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Tab Pro",
+    "Description": "Modern tablet featuring long battery life.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Pad 12-inch V2",
+    "Description": "High-Performance tablet featuring gorgeous display.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Pad 10-inch Z",
+    "Description": "Next-Gen tablet featuring gorgeous display.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Tab Pro Z",
+    "Description": "Advanced tablet featuring unmatched speed.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Slate 10-inch V2",
+    "Description": "Premium tablet featuring gorgeous display.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Pad 10-inch Z",
+    "Description": "High-Performance tablet featuring long battery life.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Slate LTE Plus",
+    "Description": "Premium tablet featuring gorgeous display.",
+    "Category": "Tablets"
+  },
+  {
+    "Name": "Watch Classic",
+    "Description": "Next-Gen smartwatche featuring gorgeous display.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Time Pro Z",
+    "Description": "Premium smartwatche featuring long battery life.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Watch Sport Z",
+    "Description": "Elite smartwatche featuring incredible design.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Band Series 9 X",
+    "Description": "Sleek smartwatche featuring industry-leading specs.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Pulse Sport Z",
+    "Description": "Modern smartwatche featuring incredible design.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Watch Classic X",
+    "Description": "Advanced smartwatche featuring incredible design.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Fit Pro X",
+    "Description": "Premium smartwatche featuring incredible design.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Time Classic Z",
+    "Description": "Sleek smartwatche featuring unmatched speed.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Watch Active Z",
+    "Description": "Advanced smartwatche featuring industry-leading specs.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Pulse Classic Z",
+    "Description": "High-Performance smartwatche featuring unmatched speed.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Band Active Gen 3",
+    "Description": "Next-Gen smartwatche featuring industry-leading specs.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Band Series 9 Z",
+    "Description": "Modern smartwatche featuring gorgeous display.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Band Pro X",
+    "Description": "Advanced smartwatche featuring gorgeous display.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Fit Sport X",
+    "Description": "Elite smartwatche featuring unmatched speed.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Watch Series 9 V2",
+    "Description": "Advanced smartwatche featuring industry-leading specs.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Time Pro Gen 3",
+    "Description": "Modern smartwatche featuring incredible design.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Pulse Series 9 V2",
+    "Description": "High-Performance smartwatche featuring industry-leading specs.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Pulse Active X",
+    "Description": "Sleek smartwatche featuring long battery life.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Fit Classic Plus",
+    "Description": "Advanced smartwatche featuring incredible design.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Watch Series 9 Z",
+    "Description": "Premium smartwatche featuring long battery life.",
+    "Category": "Smartwatches"
+  },
+  {
+    "Name": "Display Ultrawide V2",
+    "Description": "Elite monitor featuring long battery life.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Panel Ultrawide Plus",
+    "Description": "Advanced monitor featuring long battery life.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Screen Ultrawide V2",
+    "Description": "Premium monitor featuring gorgeous display.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Vision OLED V2",
+    "Description": "Next-Gen monitor featuring gorgeous display.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Screen 144Hz",
+    "Description": "Elite monitor featuring gorgeous display.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "View 144Hz Z",
+    "Description": "Advanced monitor featuring industry-leading specs.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "View 4K Gen 3",
+    "Description": "Modern monitor featuring long battery life.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "View 4K Z",
+    "Description": "Sleek monitor featuring unmatched speed.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Panel Curved X",
+    "Description": "Elite monitor featuring unmatched speed.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Vision 144Hz Z",
+    "Description": "Modern monitor featuring unmatched speed.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "View Curved X",
+    "Description": "Elite monitor featuring gorgeous display.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Screen 144Hz Gen 3",
+    "Description": "Premium monitor featuring industry-leading specs.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Vision 144Hz V2",
+    "Description": "Sleek monitor featuring long battery life.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Screen Curved Plus",
+    "Description": "High-Performance monitor featuring long battery life.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Vision Curved Plus",
+    "Description": "Next-Gen monitor featuring gorgeous display.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "View 4K V2",
+    "Description": "Premium monitor featuring gorgeous display.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "View 144Hz Z",
+    "Description": "Next-Gen monitor featuring incredible design.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Display Curved Plus",
+    "Description": "Sleek monitor featuring incredible design.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "View Curved Plus",
+    "Description": "Sleek monitor featuring long battery life.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Screen Ultrawide",
+    "Description": "Advanced monitor featuring unmatched speed.",
+    "Category": "Monitors"
+  },
+  {
+    "Name": "Mech Low-Profile Plus",
+    "Description": "High-Performance keyboard featuring gorgeous display.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Click Pro Z",
+    "Description": "High-Performance keyboard featuring unmatched speed.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Click Wireless Plus",
+    "Description": "High-Performance keyboard featuring unmatched speed.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Type RGB V2",
+    "Description": "Advanced keyboard featuring long battery life.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Mech Low-Profile Gen 3",
+    "Description": "Premium keyboard featuring long battery life.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Click RGB",
+    "Description": "Sleek keyboard featuring gorgeous display.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Click Pro Gen 3",
+    "Description": "Advanced keyboard featuring unmatched speed.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Board Pro Gen 3",
+    "Description": "Sleek keyboard featuring incredible design.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Keystroke Low-Profile Gen 3",
+    "Description": "Next-Gen keyboard featuring gorgeous display.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Type Low-Profile",
+    "Description": "Modern keyboard featuring industry-leading specs.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Board Pro Z",
+    "Description": "Advanced keyboard featuring long battery life.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Mech RGB",
+    "Description": "Modern keyboard featuring unmatched speed.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Keystroke Tenkeyless Gen 3",
+    "Description": "Modern keyboard featuring unmatched speed.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Keystroke Wireless Plus",
+    "Description": "High-Performance keyboard featuring industry-leading specs.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Keystroke Tenkeyless",
+    "Description": "Next-Gen keyboard featuring industry-leading specs.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Mech Wireless Plus",
+    "Description": "Modern keyboard featuring industry-leading specs.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Keystroke Pro X",
+    "Description": "Next-Gen keyboard featuring gorgeous display.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Type Pro X",
+    "Description": "High-Performance keyboard featuring gorgeous display.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Board RGB X",
+    "Description": "Sleek keyboard featuring gorgeous display.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Keystroke RGB Plus",
+    "Description": "Next-Gen keyboard featuring long battery life.",
+    "Category": "Keyboards"
+  },
+  {
+    "Name": "Pointer Gaming Plus",
+    "Description": "Sleek mic featuring long battery life.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Track Gaming Plus",
+    "Description": "Premium mic featuring unmatched speed.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Pointer Pro Z",
+    "Description": "Modern mic featuring industry-leading specs.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Click Ergonomic",
+    "Description": "Sleek mic featuring unmatched speed.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Pointer Ergonomic Z",
+    "Description": "Sleek mic featuring gorgeous display.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Glide Pro Plus",
+    "Description": "Advanced mic featuring unmatched speed.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Glide Ergonomic Z",
+    "Description": "Advanced mic featuring incredible design.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Nav Gaming",
+    "Description": "Modern mic featuring gorgeous display.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Glide Gaming Z",
+    "Description": "Advanced mic featuring industry-leading specs.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Click Wireless V2",
+    "Description": "Modern mic featuring gorgeous display.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Nav Wireless Z",
+    "Description": "Advanced mic featuring industry-leading specs.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Nav Gaming V2",
+    "Description": "Premium mic featuring long battery life.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Pointer Mini Z",
+    "Description": "High-Performance mic featuring long battery life.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Glide Gaming X",
+    "Description": "Elite mic featuring unmatched speed.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Click Wireless Gen 3",
+    "Description": "Modern mic featuring industry-leading specs.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Nav Ergonomic Gen 3",
+    "Description": "Modern mic featuring gorgeous display.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Pointer Pro Gen 3",
+    "Description": "High-Performance mic featuring incredible design.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Pointer Ergonomic V2",
+    "Description": "Modern mic featuring gorgeous display.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Click Wireless V2",
+    "Description": "Modern mic featuring unmatched speed.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Track Gaming V2",
+    "Description": "High-Performance mic featuring industry-leading specs.",
+    "Category": "Mice"
+  },
+  {
+    "Name": "Station Slim Gen 3",
+    "Description": "Sleek console featuring gorgeous display.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Box Arcade X",
+    "Description": "Advanced console featuring unmatched speed.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Station Series X Plus",
+    "Description": "Next-Gen console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Box Series X Z",
+    "Description": "Elite console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Game Series X Z",
+    "Description": "Next-Gen console featuring unmatched speed.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Station Pro Gen 3",
+    "Description": "High-Performance console featuring gorgeous display.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Play Slim Gen 3",
+    "Description": "Elite console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Play Arcade Z",
+    "Description": "Next-Gen console featuring incredible design.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Station Slim Gen 3",
+    "Description": "High-Performance console featuring industry-leading specs.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Box Portable Gen 3",
+    "Description": "Sleek console featuring incredible design.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Box Slim Plus",
+    "Description": "Sleek console featuring incredible design.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Station Portable Gen 3",
+    "Description": "Advanced console featuring gorgeous display.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Play Arcade Gen 3",
+    "Description": "Next-Gen console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Entertain Portable Plus",
+    "Description": "Premium console featuring incredible design.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Station Series X",
+    "Description": "Next-Gen console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Entertain Slim Gen 3",
+    "Description": "Sleek console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Box Slim Plus",
+    "Description": "Next-Gen console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Station Series X V2",
+    "Description": "Modern console featuring incredible design.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Box Portable Z",
+    "Description": "Advanced console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Play Pro X",
+    "Description": "Sleek console featuring long battery life.",
+    "Category": "Consoles"
+  },
+  {
+    "Name": "Capture Compact Gen 3",
+    "Description": "Modern camera featuring unmatched speed.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Shoot Mirrorless Z",
+    "Description": "Elite camera featuring gorgeous display.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Shoot Mirrorless X",
+    "Description": "Sleek camera featuring gorgeous display.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Snap Vlog X",
+    "Description": "Modern camera featuring gorgeous display.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Snap Pro Z",
+    "Description": "High-Performance camera featuring unmatched speed.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Capture Vlog Gen 3",
+    "Description": "Sleek camera featuring unmatched speed.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Lens Compact Gen 3",
+    "Description": "Elite camera featuring incredible design.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Snap DSLR Plus",
+    "Description": "Next-Gen camera featuring industry-leading specs.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Lens Pro Gen 3",
+    "Description": "Elite camera featuring incredible design.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Focus Compact Plus",
+    "Description": "Next-Gen camera featuring long battery life.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Focus Pro",
+    "Description": "Next-Gen camera featuring incredible design.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Snap Compact Plus",
+    "Description": "Elite camera featuring industry-leading specs.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Shoot Pro",
+    "Description": "Sleek camera featuring long battery life.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Focus Pro X",
+    "Description": "Elite camera featuring long battery life.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Shoot Pro Plus",
+    "Description": "Premium camera featuring incredible design.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Focus Compact V2",
+    "Description": "Modern camera featuring long battery life.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Snap Vlog Z",
+    "Description": "Modern camera featuring incredible design.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Capture Mirrorless",
+    "Description": "Elite camera featuring incredible design.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Shoot DSLR X",
+    "Description": "Next-Gen camera featuring long battery life.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Lens Vlog X",
+    "Description": "Elite camera featuring incredible design.",
+    "Category": "Cameras"
+  },
+  {
+    "Name": "Audio Studio Gen 3",
+    "Description": "Elite headphone featuring unmatched speed.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Tune Pro",
+    "Description": "Elite headphone featuring industry-leading specs.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Tune Noise Cancelling Plus",
+    "Description": "Premium headphone featuring gorgeous display.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Audio Studio X",
+    "Description": "Elite headphone featuring gorgeous display.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Hear Pro V2",
+    "Description": "Elite headphone featuring incredible design.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Hear Wireless Plus",
+    "Description": "Premium headphone featuring industry-leading specs.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Audio Studio X",
+    "Description": "Advanced headphone featuring gorgeous display.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Hear Wireless X",
+    "Description": "Sleek headphone featuring long battery life.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Hear Bass",
+    "Description": "High-Performance headphone featuring industry-leading specs.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Tune Studio Plus",
+    "Description": "Sleek headphone featuring unmatched speed.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Audio Wireless Gen 3",
+    "Description": "Sleek headphone featuring incredible design.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Sound Pro V2",
+    "Description": "High-Performance headphone featuring long battery life.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Tune Wireless",
+    "Description": "High-Performance headphone featuring unmatched speed.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Tune Noise Cancelling",
+    "Description": "Premium headphone featuring long battery life.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Sound Noise Cancelling Plus",
+    "Description": "Next-Gen headphone featuring long battery life.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Tune Wireless Z",
+    "Description": "Premium headphone featuring industry-leading specs.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Hear Bass Z",
+    "Description": "Advanced headphone featuring industry-leading specs.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Sound Noise Cancelling Gen 3",
+    "Description": "Modern headphone featuring industry-leading specs.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Sound Bass Plus",
+    "Description": "Sleek headphone featuring gorgeous display.",
+    "Category": "Headphones"
+  },
+  {
+    "Name": "Beat Pro Z",
+    "Description": "Advanced headphone featuring long battery life.",
+    "Category": "Headphones"
+  }
+]

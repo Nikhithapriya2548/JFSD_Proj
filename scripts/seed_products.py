@@ -172,43 +172,14 @@ NON_PRODUCT_WORDS = ("person", "people", "hand", "hands", "outdoor", "cafe",
 
 
 def fetch_images_for_category(category: str, count: int = 30) -> list:
-    """Fetch clean product-style photo URLs from Unsplash (one API call each)."""
-    search_terms = {
-        "Laptops": "laptop on white background",
-        "Tablets": "tablet computer product photo",
-        "Phones": "smartphone product photo white background",
-    }
-    if not UNSPLASH_ACCESS_KEY or "PASTE" in UNSPLASH_ACCESS_KEY:
-        warn(f"Unsplash: missing access key, no images for {category}")
-        return []
-    try:
-        r = requests.get(
-            "https://api.unsplash.com/search/photos",
-            params={"query": search_terms.get(category, category),
-                    "per_page": count,
-                    "orientation": "squarish",
-                    "order_by": "relevant",
-                    "client_id": UNSPLASH_ACCESS_KEY},
-            headers=HEADERS,
-            timeout=20,
-        )
-        if r.status_code != 200:
-            warn(f"Unsplash search failed for {category}: HTTP {r.status_code}: {r.text[:200]}")
-            return []
-        results = r.json().get("results", [])
-
-        def is_product_shot(photo):
-            text = f"{photo.get('alt_description') or ''} {photo.get('description') or ''}".lower()
-            return not any(w in text for w in NON_PRODUCT_WORDS)
-
-        filtered = [p for p in results if is_product_shot(p)]
-        # Fall back to the unfiltered pool rather than starve the category
-        pool = filtered if len(filtered) >= 5 else results
-        urls = [p.get("urls", {}).get("small") for p in pool]
-        return [u for u in urls if u]
-    except requests.RequestException as e:
-        warn(f"Unsplash search failed for {category}: network error ({e})")
-        return []
+    """Return local generated images instead of Unsplash."""
+    if "laptop" in category.lower():
+        return ["/laptop.png"]
+    if "tablet" in category.lower():
+        return ["/tablet.png"]
+    if "phone" in category.lower():
+        return ["/phone.png"]
+    return ["/placeholder-product.png"]
 
 
 def pagination_links(html, category_path):

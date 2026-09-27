@@ -13,8 +13,8 @@ export function ProductSkeleton() {
 export default function ProductList({ products, loading }) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => <ProductSkeleton key={i} />)}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        {Array.from({ length: 8 }).map((_, i) => <ProductSkeleton key={i} />)}
       </div>
     )
   }
@@ -22,7 +22,7 @@ export default function ProductList({ products, loading }) {
     return <p className="text-center text-gray-500 py-10">No products match your filters.</p>
   }
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       {products.map((p) => <ProductCard key={p.id} product={p} />)}
     </div>
   )
